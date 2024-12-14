@@ -1,5 +1,6 @@
 ﻿var firstColumn = new List<int>();
 var secondColumn = new List<int>();
+int totalSimilarity = 0;
 
 var inputPath = "/home/roman/programming/net/advent/input.txt";
 var lines = File.ReadLines(inputPath);
@@ -12,14 +13,12 @@ foreach (var line in lines)
     secondColumn.Add(int.Parse(lineParts[1]));
 }
 
-firstColumn.Sort();
-secondColumn.Sort();
-
-int totalColumnsDistance = 0;
-
 for (int i = 0; i < firstColumn.Count; i++)
 {
-    totalColumnsDistance += Math.Abs(firstColumn[i] - secondColumn[i]);
+    int id = firstColumn[i];
+    int count = secondColumn.Count(x => x == id);
+
+    totalSimilarity += id * count;
 }
 
-Console.WriteLine("Total distance between columns: " + totalColumnsDistance);
+Console.WriteLine("Total similarity between columns: " + totalSimilarity);
