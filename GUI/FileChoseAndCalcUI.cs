@@ -13,17 +13,17 @@ class FileChoseAndCalcUI : Box
     protected string? result;
     protected Label resultLabel;
 
-    public FileChoseAndCalcUI(string taskClassArg, string labelTextArg = "Column Distance Calculator")
+    public FileChoseAndCalcUI(string taskClass, string labelText = "Column Distance Calculator")
     {
-        taskClass = taskClassArg;
-        labelText = labelTextArg;
+        this.taskClass = taskClass;
+        this.labelText = labelText;
         // box padding and spacing
         Margin = 10;
         Spacing = 10;
         // vertical box
         Orientation = Orientation.Vertical;
 
-        label = new Label(labelText);
+        label = new Label(this.labelText);
         Add(label);
 
         // open file dialog
@@ -75,7 +75,19 @@ class FileChoseAndCalcUI : Box
             return;
         }
 
-        result = Program.RunAndReturnResult(taskClass, inputPath);
+        try
+        {
+            result = Program.RunAndReturnResult(taskClass, inputPath);
+        }
+        catch (Exception ex)
+        {
+            var message = "Error when parsing the input file";
+            var details = "Please check the input file format and try again.\n\n" + "Error details:\n" + ex.Message;
+
+            var messageDialog = new MessageDialog(null, DialogFlags.Modal, MessageType.Error, ButtonsType.Ok, message);
+            messageDialog.SecondaryText = details;
+            messageDialog.Run();
+        }
 
         // update the result label
         resultLabel.Text = "Result: " + result;

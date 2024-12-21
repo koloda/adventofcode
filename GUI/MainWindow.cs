@@ -6,9 +6,9 @@ class MainWindow : Window
 {
     private List<string> taskClasses;
 
-    public MainWindow(List<string> taskClassesArg): base("Advent of Code")
+    public MainWindow(List<string> taskClasses): base("Advent of Code")
     {
-        taskClasses = taskClassesArg;
+        this.taskClasses = taskClasses;
 
         SetDefaultSize(800, 600);
         SetPosition(WindowPosition.Center);

@@ -8,7 +8,6 @@ class Program
 {
     private static readonly List<int> firstColumn = new List<int>();
     private static readonly List<int> secondColumn = new List<int>();
-    private static string? inputPath;
 
     public static List<string> GetTaskClasses()
     {
@@ -23,44 +22,44 @@ class Program
         new MainWindow(GetTaskClasses());
         Application.Run();
 
-        int taskNumber;
+        // int taskNumber;
 
-        if (args.Length > 0)
-        {
-            taskNumber = ParseTaskNumber(args[0]);
-        }
-        else
-        {
-            Console.WriteLine("Please provide a task number");
-            string? arg = Console.ReadLine();
+        // if (args.Length > 0)
+        // {
+        //     taskNumber = ParseTaskNumber(args[0]);
+        // }
+        // else
+        // {
+        //     Console.WriteLine("Please provide a task number");
+        //     string? arg = Console.ReadLine();
 
-            if (arg == null)
-            {
-                throw new Exception("Task number not provided");
-            }
+        //     if (arg == null)
+        //     {
+        //         throw new Exception("Task number not provided");
+        //     }
 
-            taskNumber = ParseTaskNumber(arg);
-        }
+        //     taskNumber = ParseTaskNumber(arg);
+        // }
 
-        var task = InstantiateTaskByNumber(taskNumber) as ITaskInterface;
+        // var task = InstantiateTaskByNumber(taskNumber) as ITaskInterface;
 
-        if (task == null)
-        {
-            throw new Exception("Task not instantiated");
-        }
+        // if (task == null)
+        // {
+        //     throw new Exception("Task not instantiated");
+        // }
 
-        ReadAndProcessInput();
+        // ReadAndProcessInput();
 
-        if (task is IWorksWithTwoColumnsInterface taskWithColumns)
-        {
-            taskWithColumns.SetColumns(firstColumn, secondColumn);
-        }
+        // if (task is IWorksWithTwoColumnsInterface taskWithColumns)
+        // {
+        //     taskWithColumns.SetColumns(firstColumn, secondColumn);
+        // }
 
-        task.Run();
-        task.PrintResult();
+        // task.Run();
+        // task.PrintResult();
     }
 
-    public static string RunAndReturnResult(string taskName, string inputPathArg)
+    public static string RunAndReturnResult(string taskName, string inputPath)
     {
         var task = InstantiateTaskByName(taskName) as ITaskInterface;
 
@@ -69,9 +68,7 @@ class Program
             throw new Exception("Task not instantiated");
         }
 
-        inputPath = inputPathArg;
-
-        ReadAndProcessInput();
+        ReadAndProcessInput(inputPath);
 
         if (task is IWorksWithTwoColumnsInterface taskWithColumns)
         {
@@ -126,7 +123,7 @@ class Program
         return instance;
     }
 
-    private static void ReadAndProcessInput()
+    private static void ReadAndProcessInput(string inputPath)
     {
         var lines = File.ReadLines(inputPath);
 
@@ -134,6 +131,7 @@ class Program
         {
             // each line is a string with two numbers separated by 1-4 spaces or tabs
             var lineParts = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
             firstColumn.Add(int.Parse(lineParts[0]));
             secondColumn.Add(int.Parse(lineParts[1]));
         }
