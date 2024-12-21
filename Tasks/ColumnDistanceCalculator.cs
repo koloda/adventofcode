@@ -23,6 +23,11 @@ public class ColumnDistanceCalculator: ITaskInterface, IWorksWithTwoColumnsInter
         totalDistance = CalculateTotalDistance();
     }
 
+    public string GetResult()
+    {
+        return totalDistance.ToString();
+    }
+
     public void PrintResult()
     {
         PrintTotalDistance();

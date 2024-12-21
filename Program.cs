@@ -1,4 +1,6 @@
 ﻿using Adventofcode.Tasks;
+using Adventofcode.GUI;
+using Gtk;
 
 namespace Adventofcode;
 
@@ -6,90 +8,122 @@ class Program
 {
     private static readonly List<int> firstColumn = new List<int>();
     private static readonly List<int> secondColumn = new List<int>();
-    private static readonly string inputPath = "/Users/mac/programming/adventofcode/input.txt";
+    private static string? inputPath;
 
-    private static List<string> GetTaskClasses ()
+    public static List<string> GetTaskClasses()
     {
-      return  [
-        typeof(ColumnDistanceCalculator).Name,
+        return [
+          typeof(ColumnDistanceCalculator).Name,
         typeof(ColumnSimilarityCalculator).Name,
       ];
     }
     static void Main(string[] args)
     {
+        Application.Init();
+        new MainWindow(GetTaskClasses());
+        Application.Run();
 
-      int taskNumber;
+        int taskNumber;
 
-      if (args.Length > 0)
-      {
-        taskNumber = ParseTaskNumber(args[0]);
-      }
-      else
-      {
-        Console.WriteLine("Please provide a task number");
-        string ?arg = Console.ReadLine();
-
-        if (arg == null)
+        if (args.Length > 0)
         {
-          throw new Exception("Task number not provided");
+            taskNumber = ParseTaskNumber(args[0]);
+        }
+        else
+        {
+            Console.WriteLine("Please provide a task number");
+            string? arg = Console.ReadLine();
+
+            if (arg == null)
+            {
+                throw new Exception("Task number not provided");
+            }
+
+            taskNumber = ParseTaskNumber(arg);
         }
 
-        taskNumber = ParseTaskNumber(arg);
-      }
+        var task = InstantiateTaskByNumber(taskNumber) as ITaskInterface;
 
-      var task = InstantiateTaskByNumber(taskNumber) as ITaskInterface;
+        if (task == null)
+        {
+            throw new Exception("Task not instantiated");
+        }
 
-      if (task == null)
-      {
-        throw new Exception("Task not instantiated");
-      }
+        ReadAndProcessInput();
 
-      ReadAndProcessInput();
+        if (task is IWorksWithTwoColumnsInterface taskWithColumns)
+        {
+            taskWithColumns.SetColumns(firstColumn, secondColumn);
+        }
 
-      if (task is IWorksWithTwoColumnsInterface taskWithColumns)
-      {
-        taskWithColumns.SetColumns(firstColumn, secondColumn);
-      }
+        task.Run();
+        task.PrintResult();
+    }
 
-      task.Run();
-      task.PrintResult();
+    public static string RunAndReturnResult(string taskName, string inputPathArg)
+    {
+        var task = InstantiateTaskByName(taskName) as ITaskInterface;
+
+        if (task == null)
+        {
+            throw new Exception("Task not instantiated");
+        }
+
+        inputPath = inputPathArg;
+
+        ReadAndProcessInput();
+
+        if (task is IWorksWithTwoColumnsInterface taskWithColumns)
+        {
+            taskWithColumns.SetColumns(firstColumn, secondColumn);
+        }
+
+        task.Run();
+
+        return task.GetResult();
     }
 
     private static int ParseTaskNumber(string arg)
     {
-      if (!int.TryParse(arg, out int taskNumber))
-      {
-        throw new Exception("Task number must be an integer");
-      }
+        if (!int.TryParse(arg, out int taskNumber))
+        {
+            throw new Exception("Task number must be an integer");
+        }
 
-      return taskNumber;
+        return taskNumber;
     }
 
-    private static Object InstantiateTaskByNumber(int taskNumber)
+    public static Object InstantiateTaskByNumber(int taskNumber)
     {
-      var taskClasses = GetTaskClasses();
+        var taskClasses = GetTaskClasses();
 
-      if (taskNumber < 0 || taskNumber >= taskClasses.Count)
-      {
-        throw new Exception("Task number out of range");
-      }
+        if (taskNumber < 0 || taskNumber >= taskClasses.Count)
+        {
+            throw new Exception("Task number out of range");
+        }
 
-      var taskClassName = taskClasses[taskNumber];
-      var taskClass = Type.GetType("Adventofcode.Tasks." + taskClassName);
+        var taskClassName = taskClasses[taskNumber];
 
-      if (taskClass == null)
-      {
-        throw new Exception("Task class not found");
-      }
+        return InstantiateTaskByName(taskClassName);
+    }
 
-      var instance = Activator.CreateInstance(taskClass);
+    public static Object InstantiateTaskByName(string taskName)
+    {
+        var taskClass = Type.GetType("Adventofcode.Tasks." + taskName);
 
-      if (instance == null)
-      {
-          throw new Exception("Task instance not created");
-      }
+        if (taskClass == null)
+        {
+            throw new Exception("Task class not found");
+        }
 
-      return instance;
+        var instance = Activator.CreateInstance(taskClass);
+
+        if (instance == null)
+        {
+            throw new Exception("Task instance not created");
+        }
+
+        return instance;
     }
 
     private static void ReadAndProcessInput()
@@ -103,5 +137,10 @@ class Program
             firstColumn.Add(int.Parse(lineParts[0]));
             secondColumn.Add(int.Parse(lineParts[1]));
         }
+    }
+
+    public static void Quit()
+    {
+        Application.Quit();
     }
 }

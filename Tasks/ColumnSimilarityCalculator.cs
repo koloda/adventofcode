@@ -24,6 +24,11 @@ public class ColumnSimilarityCalculator: ITaskInterface, IWorksWithTwoColumnsInt
         totalSimilarity = CalculateTotalSimilarity();
     }
 
+    public string GetResult()
+    {
+        return totalSimilarity.ToString();
+    }
+
     public void PrintResult()
     {
         PrintTotalSimilarity();
