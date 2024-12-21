@@ -1,4 +1,4 @@
-namespace Adventofcode;
+namespace Adventofcode.Tasks;
 
 public interface ITaskInterface
 {
